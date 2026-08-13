@@ -1,0 +1,14 @@
+# 源文件（网站使用 assets/ 和 files/ 下的副本）
+/CV_Yang Yifei.pdf
+/profile.jpg
+
+# 操作系统 / 编辑器
+.DS_Store
+Thumbs.db
+*.tmp
+~$*
+
+# Python 临时脚本
+_extract_cv.py
+__pycache__/
+*.pyc
