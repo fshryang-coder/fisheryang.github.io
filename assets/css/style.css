@@ -363,6 +363,105 @@ nav.site-nav a.active { color: var(--cinnabar); font-weight: 600; }
   .carousel-slide img { height: 170px; }
 }
 
+/* ---- Lightbox (full-screen image viewer) ---- */
+.lightbox {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(20, 18, 16, 0.92);
+  backdrop-filter: blur(4px);
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+.lightbox.open {
+  display: flex;
+  animation: lbFadeIn 0.2s ease;
+}
+@keyframes lbFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.lb-img {
+  max-width: 88vw;
+  max-height: 80vh;
+  object-fit: contain;
+  border-radius: 6px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+}
+.lb-close {
+  position: absolute;
+  top: 1.2rem;
+  right: 1.5rem;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.lb-close:hover { background: var(--cinnabar); }
+.lb-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  font-size: 1.8rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.lb-nav:hover { background: var(--cinnabar); }
+.lb-prev { left: 1.5rem; }
+.lb-next { right: 1.5rem; }
+.lb-controls {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.lb-play {
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+.lb-play:hover { background: var(--cinnabar); }
+.lb-counter {
+  color: rgba(255,255,255,0.85);
+  font-size: 0.9rem;
+  font-family: "Fraunces", Georgia, serif;
+  min-width: 4rem;
+  text-align: center;
+}
+@media (max-width: 768px) {
+  .lb-nav { width: 2.4rem; height: 2.4rem; font-size: 1.4rem; }
+  .lb-prev { left: 0.5rem; }
+  .lb-next { right: 0.5rem; }
+  .lb-img { max-width: 95vw; max-height: 72vh; }
+}
+
 /* CV timeline */
 .cv-section { margin-bottom: 2.4rem; }
 .cv-section h2 {

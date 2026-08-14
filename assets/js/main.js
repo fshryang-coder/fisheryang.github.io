@@ -90,5 +90,122 @@ document.addEventListener("DOMContentLoaded", function () {
       var slideW = slides[0].offsetWidth + 12;
       track.scrollBy({ left: slideW, behavior: "smooth" });
     });
+
+    // Click image to open lightbox
+    var imgList = track.querySelectorAll("img");
+    imgList.forEach(function (img, i) {
+      img.style.cursor = "zoom-in";
+      img.addEventListener("click", function () {
+        openLightbox(files, key, i);
+      });
+    });
   });
 });
+
+// ---- Lightbox (full-screen image viewer with manual playback) ----
+var lightbox = null;
+var lbImg = null;
+var lbCounter = null;
+var lbPrev = null;
+var lbNext = null;
+var lbPlay = null;
+var lbClose = null;
+var lbState = { urls: [], idx: 0, playing: false, timer: null };
+
+function buildLightbox() {
+  if (lightbox) return;
+  lightbox = document.createElement("div");
+  lightbox.className = "lightbox";
+  lightbox.innerHTML =
+    '<button class="lb-close" aria-label="Close">&times;</button>' +
+    '<button class="lb-nav lb-prev" aria-label="Previous">&#8249;</button>' +
+    '<img class="lb-img" alt="Full view" />' +
+    '<button class="lb-nav lb-next" aria-label="Next">&#8250;</button>' +
+    '<div class="lb-controls">' +
+      '<button class="lb-play" aria-label="Play/Pause">&#9654;</button>' +
+      '<span class="lb-counter">1 / 1</span>' +
+    '</div>';
+  document.body.appendChild(lightbox);
+
+  lbImg = lightbox.querySelector(".lb-img");
+  lbCounter = lightbox.querySelector(".lb-counter");
+  lbPrev = lightbox.querySelector(".lb-prev");
+  lbNext = lightbox.querySelector(".lb-next");
+  lbPlay = lightbox.querySelector(".lb-play");
+  lbClose = lightbox.querySelector(".lb-close");
+
+  lbPrev.addEventListener("click", function (e) { e.stopPropagation(); lbShow(lbState.idx - 1); });
+  lbNext.addEventListener("click", function (e) { e.stopPropagation(); lbShow(lbState.idx + 1); });
+  lbPlay.addEventListener("click", function (e) { e.stopPropagation(); lbTogglePlay(); });
+  lbClose.addEventListener("click", closeLightbox);
+  lightbox.addEventListener("click", function (e) { if (e.target === lightbox || e.target === lbImg) closeLightbox(); });
+
+  // Keyboard controls
+  document.addEventListener("keydown", function (e) {
+    if (!lightbox.classList.contains("open")) return;
+    if (e.key === "ArrowLeft") { e.preventDefault(); lbShow(lbState.idx - 1); }
+    else if (e.key === "ArrowRight") { e.preventDefault(); lbShow(lbState.idx + 1); }
+    else if (e.key === " ") { e.preventDefault(); lbTogglePlay(); }
+    else if (e.key === "Escape") { e.preventDefault(); closeLightbox(); }
+  });
+}
+
+function openLightbox(files, key, startIdx) {
+  buildLightbox();
+  lbState.urls = files.map(function (fname) {
+    var parts = fname.split("/");
+    var encoded = parts.map(encodeURIComponent).join("/");
+    return "researches/" + key + "/charts/" + encoded;
+  });
+  lbState.idx = startIdx || 0;
+  lightbox.classList.add("open");
+  document.body.style.overflow = "hidden";
+  lbShow(lbState.idx);
+}
+
+function lbShow(idx) {
+  if (lbState.urls.length === 0) return;
+  // Wrap around
+  if (idx < 0) idx = lbState.urls.length - 1;
+  if (idx > lbState.urls.length - 1) idx = 0;
+  lbState.idx = idx;
+  lbImg.src = lbState.urls[idx];
+  lbCounter.textContent = (idx + 1) + " / " + lbState.urls.length;
+  // If playing, keep advancing
+  if (lbState.playing) {
+    lbRestartTimer();
+  }
+}
+
+function lbTogglePlay() {
+  lbState.playing = !lbState.playing;
+  if (lbState.playing) {
+    lbPlay.innerHTML = "&#10074;&#10074;"; // pause icon
+    lbPlay.setAttribute("aria-label", "Pause");
+    lbRestartTimer();
+  } else {
+    lbPlay.innerHTML = "&#9654;"; // play icon
+    lbPlay.setAttribute("aria-label", "Play");
+    clearTimeout(lbState.timer);
+  }
+}
+
+function lbRestartTimer() {
+  clearTimeout(lbState.timer);
+  lbState.timer = setTimeout(function () {
+    lbShow(lbState.idx + 1);
+  }, 2500);
+}
+
+function closeLightbox() {
+  if (!lightbox) return;
+  lightbox.classList.remove("open");
+  document.body.style.overflow = "";
+  lbState.playing = false;
+  clearTimeout(lbState.timer);
+  if (lbPlay) {
+    lbPlay.innerHTML = "&#9654;";
+    lbPlay.setAttribute("aria-label", "Play");
+  }
+  if (lbImg) lbImg.src = "";
+}
