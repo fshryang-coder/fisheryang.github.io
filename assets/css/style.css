@@ -696,7 +696,8 @@ div.page.page-narrow > main.content {
 }
 .article-refs { margin-top: 2.5rem; }
 .ref-list {
-  padding-left: 1.4rem;
+  list-style: none;
+  padding-left: 0;
   margin: 0.6rem 0 0;
   font-size: 0.88rem;
   color: var(--ink-soft);
