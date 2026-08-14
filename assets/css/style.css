@@ -517,7 +517,10 @@ nav.site-nav a.active { color: var(--cinnabar); font-weight: 600; }
 }
 
 /* ---------- Narrow page (opinion list + article) ---------- */
-.page-narrow .content { max-width: 760px; }
+.page-narrow {
+  display: block; /* override .page 2-col grid */
+}
+.page-narrow .content { max-width: 760px; margin: 0 auto; }
 
 .page-title {
   font-family: "Fraunces", Georgia, serif;
